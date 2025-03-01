@@ -1,6 +1,3 @@
-// PROVIDED CODE BELOW (LINES 1 - 80) DO NOT REMOVE
-
-// The store will hold all information needed globally
 let store = {
 	track_id: undefined,
 	track_name: undefined,
@@ -9,7 +6,6 @@ let store = {
 	race_id: undefined,
 }
 
-// We need our javascript to wait until the DOM is loaded
 document.addEventListener("DOMContentLoaded", function() {
 	onPageLoad()
 	setupClickHandlers()
@@ -18,17 +14,13 @@ document.addEventListener("DOMContentLoaded", function() {
 async function onPageLoad() {
 	console.log("Getting form info for dropdowns!")
 	try {
-		getTracks()
-			.then(tracks => {
-				const html = renderTrackCards(tracks)
-				renderAt('#tracks', html)
-			})
+		const tracks = await getTracks()
+		const htmlTracks = renderTrackCards(tracks)
+		renderAt('#tracks', htmlTracks)
 
-		getRacers()
-			.then((racers) => {
-				const html = renderRacerCars(racers)
-				renderAt('#racers', html)
-			})
+		const racers = await getRacers()
+		const htmlRacers = renderRacerCars(racers)
+		renderAt('#racers', htmlRacers)
 	} catch(error) {
 		console.log("Problem getting tracks and racers ::", error.message)
 		console.error(error)
@@ -39,29 +31,23 @@ function setupClickHandlers() {
 	document.addEventListener('click', function(event) {
 		const { target } = event
 
-		// Race track form field
 		if (target.matches('.card.track')) {
 			handleSelectTrack(target)
 			store.track_id = target.id
 			store.track_name = target.innerHTML
 		}
 
-		// Racer form field
 		if (target.matches('.card.racer')) {
 			handleSelectRacer(target)
 			store.player_id = target.id
 			store.player_name = target.innerHTML
 		}
 
-		// Submit create race form
 		if (target.matches('#submit-create-race')) {
 			event.preventDefault()
-	
-			// start race
 			handleCreateRace()
 		}
 
-		// Handle acceleration click
 		if (target.matches('#gas-peddle')) {
 			handleAccelerate()
 		}
@@ -72,26 +58,29 @@ function setupClickHandlers() {
 
 async function delay(ms) {
 	try {
-		return await new Promise(resolve => setTimeout(resolve, ms));
+		return await new Promise(resolve => setTimeout(resolve, ms))
 	} catch(error) {
 		console.log("an error shouldn't be possible here")
 		console.log(error)
 	}
 }
 
+<<<<<<< HEAD
 // ^ PROVIDED CODE ^ DO NOT REMOVE
 
 // BELOW THIS LINE IS CODE WHERE STUDENT EDITS ARE NEEDED ----------------------------
 
+=======
+>>>>>>> script
 async function handleCreateRace() {
 	console.log("in create race")
 
-	// render starting UI
 	renderAt('#race', renderRaceStartView(store.track_name))
 
 	const player_id = store.player_id
 	const track_id = store.track_id
 
+<<<<<<< HEAD
 	const race = await createRace(player_id, track_id)
 	console.log("RACE: ", race)
 	store.race_id = race.ID
@@ -99,10 +88,24 @@ async function handleCreateRace() {
 	await runCountdown()
 	await startRace(store.race_id)
 	await runRace(store.race_id)
+=======
+	try {
+		const race = await createRace(player_id, track_id)
+		console.log("RACE: ", race)
+		store.race_id = race.ID
+
+		await runCountdown()
+		await startRace(store.race_id)
+		await runRace(store.race_id)
+	} catch (error) {
+		console.log("Problem with handleCreateRace::", error)
+	}
+>>>>>>> script
 }
 
 function runRace(raceID) {
 	return new Promise(resolve => {
+<<<<<<< HEAD
 		let lastUpdateTime = 0;
 		const updateInterval = 100; 
 
@@ -139,6 +142,37 @@ function runRace(raceID) {
 		
 		requestAnimationFrame(updateRace);
 	});
+=======
+		let lastUpdateTime = 0
+		const updateInterval = 200
+
+		const updateRace = async () => {
+			const now = Date.now()
+			if (now - lastUpdateTime >= updateInterval) {
+				lastUpdateTime = now
+
+				try {
+					const res = await getRace(raceID)
+					console.log("Race status:", res.status)
+
+					if (res.status === "in-progress") {
+						renderAt('#leaderBoard', raceProgress(res.positions))
+					} else if (res.status === "finished") {
+						renderAt('#race', resultsView(res.positions))
+						resolve(res)
+					}
+				} catch (err) {
+					console.log("Problem with runRace::", err)
+					resolve(null)
+				}
+			}
+
+			requestAnimationFrame(updateRace)
+		}
+
+		requestAnimationFrame(updateRace)
+	})
+>>>>>>> script
 }
 
 async function runCountdown() {
@@ -156,7 +190,7 @@ async function runCountdown() {
 			}, 1000)
 		})
 	} catch(error) {
-		console.log(error);
+		console.log(error)
 	}
 }
 
@@ -190,11 +224,12 @@ function handleAccelerate() {
 		})
 		.catch(err => {
 			console.log("Acceleration failed::", err)
+<<<<<<< HEAD
 		});
+=======
+		})
+>>>>>>> script
 }
-
-// HTML VIEWS ------------------------------------------------
-// Provided code - do not remove
 
 function renderRacerCars(racers) {
 	if (!racers.length) {
@@ -213,8 +248,13 @@ function renderRacerCars(racers) {
 }
 
 function renderRacerCard(racer) {
+<<<<<<< HEAD
 	const { id, driver_name } = racer;
 	return `<h4 class="card racer" id="${id}">${driver_name}</h4>`;
+=======
+	const { id, driver_name } = racer
+	return `<h4 class="card racer" id="${id}">${driver_name}</h4>`
+>>>>>>> script
 }
 
 function renderTrackCards(tracks) {
@@ -235,7 +275,6 @@ function renderTrackCards(tracks) {
 
 function renderTrackCard(track) {
 	const { id, name } = track
-
 	return `<h4 id="${id}" class="card track">${name}</h4>`
 }
 
@@ -291,7 +330,10 @@ function resultsView(positions) {
 			<h3>Race Results</h3>
 			<p>The race is done! Here are the final results:</p>
 			${results.join('')}
+<<<<<<< HEAD
 			<a href="/results.html">View Detailed Results</a>
+=======
+>>>>>>> script
 		</main>
 	`
 }
@@ -324,14 +366,16 @@ function raceProgress(positions) {
 
 function renderAt(element, html) {
 	const node = document.querySelector(element)
-
 	node.innerHTML = html
 }
 
+<<<<<<< HEAD
 // ^ Provided code ^ do not remove
 
 // API CALLS ------------------------------------------------
 
+=======
+>>>>>>> script
 const SERVER = 'http://localhost:3001'
 
 function defaultFetchOpts() {
@@ -403,6 +447,7 @@ function accelerate(id) {
 	})
 	.then(res => {
 		if (!res.ok) {
+<<<<<<< HEAD
 			throw new Error(`Server returned ${res.status}: ${res.statusText}`);
 		}
 		return res.json();
@@ -411,4 +456,14 @@ function accelerate(id) {
 		console.log("Problem with accelerate request::", err);
 		throw err; 
 	});
+=======
+			throw new Error(`Server returned ${res.status}: ${res.statusText}`)
+		}
+		return res.json()
+	})
+	.catch(err => {
+		console.log("Problem with accelerate request::", err)
+		throw err
+	})
+>>>>>>> script
 }
